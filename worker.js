@@ -58,6 +58,7 @@ const isString = x => typeof x === 'string' || x instanceof String;
   }
 
   // node_modules/decode-named-character-reference/index.dom.js
+ 
 
   function decodeNamedCharacterReference(value) {
     var element = document.createElement("i");
@@ -7421,7 +7422,7 @@ const isString = x => typeof x === 'string' || x instanceof String;
   }
 
   // entry_final.js
-  Object.assign(globalThis, {
+  Object.assign(globalThis,{
     fromMarkdown,
     gfm,
     gfmFromMarkdown
@@ -7429,6 +7430,8 @@ const isString = x => typeof x === 'string' || x instanceof String;
 })();
 // ── NAV CRUFT STRIPPER ────────────────────────────────────────────────────────
 // Removes rendered-nav lines baked into fetched .md docs before parsing.
+
+
 
 const NAV_EXACT = new Set(['yesno', 'copy page', 'copy'])
 const NAV_RE = [
@@ -7738,10 +7741,7 @@ function collapseExclusiveArrays(obj) {
       let exclusive = true
       for (const item of obj) {
         for (const k of Object.keys(item)) {
-          if (seen.has(k)) {
-            exclusive = false;
-            break
-          }
+          if (seen.has(k)) { exclusive = false; break }
           seen.add(k)
         }
         if (!exclusive) break
@@ -7803,6 +7803,7 @@ function parseMarkdown(markdown) {
   return result
 }
 
+
 export default {
   async fetch(req) {
 
@@ -7841,9 +7842,7 @@ function corsJson() {
 }
 
 function errResponse(status, message) {
-  return new Response(JSON.stringify({
-    error: message
-  }), {
+  return new Response(JSON.stringify({ error: message }), {
     status,
     headers: corsJson(),
   })

@@ -62,6 +62,7 @@ const isString = x => typeof x === 'string' || x instanceof String;
   }
 
   // node_modules/decode-named-character-reference/index.dom.js
+ 
 
   function decodeNamedCharacterReference(value) {
     var element = document.createElement("i");
@@ -7425,7 +7426,7 @@ const isString = x => typeof x === 'string' || x instanceof String;
   }
 
   // entry_final.js
-  Object.assign(globalThis, {
+  Object.assign(globalThis,{
     fromMarkdown,
     gfm,
     gfmFromMarkdown
@@ -7433,6 +7434,8 @@ const isString = x => typeof x === 'string' || x instanceof String;
 })();
 // ── NAV CRUFT STRIPPER ────────────────────────────────────────────────────────
 // Removes rendered-nav lines baked into fetched .md docs before parsing.
+
+
 
 const NAV_EXACT = new Set(['yesno', 'copy page', 'copy'])
 const NAV_RE = [
@@ -7742,10 +7745,7 @@ function collapseExclusiveArrays(obj) {
       let exclusive = true
       for (const item of obj) {
         for (const k of Object.keys(item)) {
-          if (seen.has(k)) {
-            exclusive = false;
-            break
-          }
+          if (seen.has(k)) { exclusive = false; break }
           seen.add(k)
         }
         if (!exclusive) break
@@ -7760,6 +7760,39 @@ function collapseExclusiveArrays(obj) {
     }
   }
   return obj
+}
+
+
+function deepDedupLists(data) {
+    // Base case: If it's not an object or is null, return it as-is
+    if (data === null || typeof data !== 'object') {
+        return data;
+    }
+
+    // If it's an array, process its elements and deduplicate
+    if (isArray(data)) {
+        // 1. Recursively process elements first (handles nested arrays/objects)
+        const processedElements = data.map(item => deepDedupLists(item));
+
+        // 2. Stringify each element so we can compare structural equality
+        const stringified = processedElements.map(item => JSON.stringify(item));
+
+        // 3. Deduplicate using a Set
+        const uniqueStrings = [...new Set(stringified)];
+
+        // 4. Rehydrate back into valid JS objects/primitives
+        return uniqueStrings.map(str => JSON.parse(str));
+    }
+
+    // If it's a plain object, recursively process its properties
+    const transformedObj = {};
+    for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+            transformedObj[key] = deepDedupLists(data[key]);
+        }
+    }
+
+    return transformedObj;
 }
 
 // ── PUBLIC API ────────────────────────────────────────────────────────────────
@@ -7804,5 +7837,5 @@ function parseMarkdown(markdown) {
 
   tryParseLeaves(result)
   collapseExclusiveArrays(result)
-  return result
+  return deepDedupLists(result);
 }
